@@ -1,14 +1,23 @@
 "use client";
 
+import { FC } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { navbarLinks } from "@/constants";
 import { cn } from "@/lib/utils";
+import { LoginLink, RegisterLink } from "@kinde-oss/kinde-auth-nextjs";
+import type { KindeUser } from "@kinde-oss/kinde-auth-nextjs/types";
 import { Button } from "@/components/ui/button";
 import type { INavabarLink } from "@/types";
-import MobileMenu from "./mobile-menu";
+import { navbarLinks } from "@/constants";
+import MobileMenu from "@/components/shared/mobile-menu";
+import UserNav from "@/components/shared/user-nav";
+import Logo from "@/components/shared/logo";
 
-const Navbar = () => {
+interface NavbarProps {
+  currentUser: KindeUser<Record<string, any>>;
+}
+
+const Navbar: FC<NavbarProps> = ({ currentUser }) => {
   const pathname = usePathname();
 
   return (
@@ -28,11 +37,7 @@ const Navbar = () => {
       "
     >
       <div className="md:col-span-3">
-        <Link href="/">
-          <h3 className="text-2xl font-semibold">
-            Dilshod <span className="text-sky-600">UI</span>
-          </h3>
-        </Link>
+        <Logo />
       </div>
 
       <div
@@ -75,8 +80,24 @@ const Navbar = () => {
         md:col-span-3
         "
       >
-        <Button variant="secondary">Sign In</Button>
-        <Button>Sign Up</Button>
+        {currentUser ? (
+          <UserNav currentUser={currentUser} />
+        ) : (
+          <div
+            className="
+            flex
+            items-center
+            gap-x-2
+            "
+          >
+            <Button variant="secondary" asChild>
+              <LoginLink>Sign In</LoginLink>
+            </Button>
+            <Button asChild>
+              <RegisterLink>Sign Up</RegisterLink>
+            </Button>
+          </div>
+        )}
       </div>
 
       <div className="md:hidden ml-2">
